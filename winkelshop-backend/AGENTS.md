@@ -39,12 +39,10 @@ Persistence mappings
 * Nutze var Keyword, Records
 * funktionaler Style mit Streams statt Schleifen
 
-
 ## Test Konventionen
 
-* Nutze Arrange/Act/Assert Pattern
-* Nutze Hamcrest Matcher
-* Führe Tests aus mit `mvnw -q test`
+* Nutze fachlich sprechende Namen
+* Bevorzuge eher einzelne Tests anstatt parametrisierter Tests.
 
 ## Build
 

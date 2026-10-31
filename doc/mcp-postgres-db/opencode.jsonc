@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "postgres": {
+      "type": "local",
+      "environment": {
+        "DATABASE_URI": "postgresql://neondb_owner:***_gDvnok80zmsr@ep-empty-brook-algexyd6-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      },
+      "command": [
+        "docker",
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DATABASE_URI",
+        "crystaldba/postgres-mcp",
+        "--access-mode=unrestricted"
+      ]
+    }
+  }
+}

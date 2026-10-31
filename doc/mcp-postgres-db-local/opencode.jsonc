@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "postgres": {
+      "type": "local",
+      "environment": {
+        "DATABASE_URI": "postgresql://winkelshop:harry123@localhost:5432/winkelshop"
+      },
+      "command": [
+        "docker",
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DATABASE_URI",
+        "crystaldba/postgres-mcp",
+        "--access-mode=unrestricted"
+      ]
+    }
+  }
+}
