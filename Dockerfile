@@ -12,10 +12,10 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install SDKMAN and Java 21
+# Install SDKMAN and Java 25
 ENV SDKMAN_DIR="/root/.sdkman"
 RUN curl -s "https://get.sdkman.io" | bash \
-    && bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-tem"
+    && bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 25-tem"
 
 # Make SDKMAN and Java available in all subsequent layers
 ENV JAVA_HOME="/root/.sdkman/candidates/java/current"
