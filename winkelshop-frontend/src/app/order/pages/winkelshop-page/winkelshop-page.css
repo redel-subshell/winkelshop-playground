@@ -120,6 +120,40 @@ h1 {
   padding: 0.42rem 0.65rem;
 }
 
+.account-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.account-actions .checkout-link,
+.account-actions .wishlist-link {
+  margin-top: 0;
+  margin-right: 0;
+}
+
+.wishlist-link {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.42rem 0.65rem;
+}
+
+.wishlist-link:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent-soft) 82%, white 18%);
+}
+
+.wishlist-link:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 70%, white 30%);
+  outline-offset: 2px;
+}
+
 .checkout-link:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 24px rgb(246 202 82 / 36%);

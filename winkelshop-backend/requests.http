@@ -44,6 +44,26 @@ Content-Type: application/json
   "quantity": 1
 }
 
+### Get Wishlist
+
+GET http://localhost:8080/wishlist
+Authorization: Bearer {{accessToken}}
+
+### Add Item To Wishlist
+
+POST http://localhost:8080/wishlist/items
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "productId": "22222222-2222-2222-2222-222222222221"
+}
+
+### Remove Item From Wishlist
+
+DELETE http://localhost:8080/wishlist/items/{{wishlistItemId}}
+Authorization: Bearer {{accessToken}}
+
 ### Checkout
 
 POST http://localhost:8080/checkout

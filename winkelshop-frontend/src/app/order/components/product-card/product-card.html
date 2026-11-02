@@ -14,12 +14,21 @@
       }
     </p>
   </div>
-  <button
-    type="button"
-    class="add-to-cart-button"
-    [disabled]="!product().inStock"
-    (click)="addToCart.emit(product().id)"
-  >
-    🧺 In den Warenkorb
-  </button>
+  <div class="product-actions">
+    <button
+      type="button"
+      class="add-to-cart-button"
+      [disabled]="!product().inStock"
+      (click)="addToCart.emit(product().id)"
+    >
+      🧺 In den Warenkorb
+    </button>
+    <button
+      type="button"
+      class="add-to-wishlist-button"
+      (click)="addToWishlist.emit(product().id)"
+    >
+      ⭐ Auf die Wunschliste
+    </button>
+  </div>
 </div>

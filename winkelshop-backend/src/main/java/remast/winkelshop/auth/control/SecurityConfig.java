@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/categories", "/products/**", "/auth/login", "/h2-console/**").permitAll()
-                        .requestMatchers("/cart/**", "/checkout", "/orders/**", "/auth/logout").authenticated()
+                        .requestMatchers("/cart/**", "/wishlist/**", "/checkout", "/orders/**", "/auth/logout").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(bearerFilter, UsernamePasswordAuthenticationFilter.class)

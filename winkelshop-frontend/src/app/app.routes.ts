@@ -27,6 +27,14 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'wishlist',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./order/pages/wishlist-page/wishlist-page').then(
+        (module) => module.WishlistPage
+      )
+  },
+  {
     path: '**',
     redirectTo: ''
   }

@@ -1,0 +1,101 @@
+<main class="wishlist-shell" aria-labelledby="wishlist-title">
+  <header class="wishlist-header">
+    <div>
+      <p class="wishlist-kicker">✨ Winkelshop</p>
+      <h1 id="wishlist-title">⭐ Deine Wunschliste</h1>
+      <p class="wishlist-subline">Merke dir magische Produkte fuer spaeter. 🌙</p>
+    </div>
+
+    <div class="account-pill" aria-label="Angemeldetes Konto">
+      @if (currentUser(); as user) {
+        <p class="account-name">{{ user.name }}</p>
+        <p class="account-email">{{ user.email }}</p>
+      }
+      <div class="account-actions">
+        <a routerLink="/" class="back-link">🏰 Zurueck zum Shop</a>
+        <a routerLink="/checkout" class="checkout-link">🪄 Zum Checkout</a>
+        <button type="button" class="logout-button" (click)="logout()">🚪 Logout</button>
+      </div>
+    </div>
+  </header>
+
+  @if (wishlistErrorMessage(); as message) {
+    <section class="message-card error" role="alert" aria-live="assertive">
+      <h2>⚠️ Wunschliste nicht verfuegbar</h2>
+      <p>{{ message }}</p>
+    </section>
+  }
+
+  <section class="wishlist-panel" aria-labelledby="wishlist-list-title">
+    <div class="panel-header">
+      <h2 id="wishlist-list-title">⭐ Gemerkte Produkte</h2>
+      <p>{{ wishlistItems().length }} Position(en)</p>
+    </div>
+
+    @if (hasWishlistItems()) {
+      <ul class="wishlist-list" aria-label="Wunschliste">
+        @for (item of wishlistItems(); track item.itemId) {
+          <li class="wishlist-item">
+            <div class="item-main">
+              <h3>{{ item.name }}</h3>
+              <p class="item-price">Preis: {{ item.price | priceLabel: wishlist().currency }}</p>
+              <p
+                class="item-stock"
+                [class.available]="item.inStock"
+                [class.unavailable]="!item.inStock"
+              >
+                @if (item.inStock) {
+                  Verfuegbar ({{ item.stock }})
+                } @else {
+                  Aktuell nicht verfuegbar
+                }
+              </p>
+            </div>
+
+            <div class="item-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                [disabled]="!item.inStock || currentlyAddingToCartItemId() === item.itemId"
+                (click)="addToCart(item)"
+              >
+                @if (currentlyAddingToCartItemId() === item.itemId) {
+                  ✨ Legen...
+                } @else {
+                  🧺 In den Warenkorb
+                }
+              </button>
+              <button
+                type="button"
+                class="danger-button"
+                [disabled]="currentlyRemovingItemId() === item.itemId"
+                (click)="removeItem(item.itemId)"
+              >
+                @if (currentlyRemovingItemId() === item.itemId) {
+                  🫥 Entfernen...
+                } @else {
+                  ❌ Entfernen
+                }
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="wishlist-footer">
+        <p class="wishlist-hint">Lege Artikel in den Warenkorb, um sie zu bestellen.</p>
+        <a routerLink="/checkout" class="checkout-button">🪄 Zum Checkout</a>
+      </div>
+    } @else {
+      <div class="message-card inline" aria-live="polite">
+        <h3>🫧 Wunschliste ist leer</h3>
+        <p>Merke dir Produkte im Shop mit einem Klick auf „⭐ Auf die Wunschliste“.</p>
+        <a routerLink="/" class="back-link">🔮 Produkte ansehen</a>
+      </div>
+    }
+
+    @if (wishlistMessage(); as message) {
+      <p class="status-message" aria-live="polite">{{ message }}</p>
+    }
+  </section>
+</main>

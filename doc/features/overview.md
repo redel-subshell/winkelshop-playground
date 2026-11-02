@@ -119,6 +119,16 @@ Ein Käufer erbt alle Fähigkeiten eines Besuchers (Generalisierung).
 
 ---
 
+### UC-10: Wunschliste verwalten
+**Akteur:** Käufer  
+**Ziel:** Interessante Artikel für später vormerken  
+**Beschreibung:** Über einen Button an jedem Produkt legt der Käufer Artikel auf seine persönliche Wunschliste. Die Wunschliste ist pro Benutzer gespeichert und nach erneutem Login wieder abrufbar. Erreichbar ist sie über einen eigenen Button im User-Bereich (oben rechts). Auf der Wunschliste kann der Käufer Artikel entfernen oder in den Warenkorb legen.  
+**Vorbedingung:** Käufer ist eingeloggt, Artikel existiert  
+**Ergebnis:** Artikel befindet sich auf der Wunschliste bzw. wurde entfernt oder in den Warenkorb gelegt  
+**Hinweis:** Anders als der Warenkorb dürfen auch nicht verfügbare Artikel vorgemerkt werden; der Warenkorb-Button ist dann deaktiviert.
+
+---
+
 ## Datenbereiche (grobe Übersicht)
 
 | Entität | Wichtige Attribute |
@@ -127,6 +137,7 @@ Ein Käufer erbt alle Fähigkeiten eines Besuchers (Generalisierung).
 | Kategorie | ID, Name, Beschreibung, aktiv |
 | Benutzer | ID, Name, E-Mail, Passwort (gehasht), Rolle (Käufer/Admin), Adresse |
 | Warenkorb | Benutzer-Ref, Artikel-Positionen, Menge, Zeitstempel |
+| Wunschliste | Benutzer-Ref, Artikel-Ref, Zeitstempel |
 | Bestellung | ID, Benutzer-Ref, Positionen, Gesamtbetrag, Lieferadresse, Zahlungsart, Status, Datum |
 
 ---
@@ -135,7 +146,6 @@ Ein Käufer erbt alle Fähigkeiten eines Besuchers (Generalisierung).
 
 - Echte Zahlungsabwicklung
 - Bewertungen & Rezensionen
-- Wunschliste
 - Rabattcodes / Aktionen
 - Mehrstufige Rollenverwaltung
 - Selbstregistrierung von Nutzern

@@ -7,9 +7,11 @@ import { AuthStateService } from '../../../auth/services/auth-state.service';
 import { ProductCard } from '../../components/product-card/product-card';
 import type { CartData } from '../../models/cart.models';
 import type { CategoriesResponse, ProductPageResponse } from '../../models/shop.models';
+import type { WishlistData } from '../../models/wishlist.models';
 import { PriceLabelPipe } from '../../pipes/price-label.pipe';
 import { CartApiService } from '../../services/cart-api.service';
 import { ShopApiService } from '../../services/shop-api.service';
+import { WishlistApiService } from '../../services/wishlist-api.service';
 
 const EMPTY_CATEGORIES_RESPONSE: CategoriesResponse = {
   data: [],
@@ -25,6 +27,7 @@ const EMPTY_CATEGORIES_RESPONSE: CategoriesResponse = {
 })
 export class WinkelshopPage {
   private readonly cartApiService = inject(CartApiService);
+  private readonly wishlistApiService = inject(WishlistApiService);
   private readonly authStateService = inject(AuthStateService);
   private readonly shopApiService = inject(ShopApiService);
 
@@ -32,15 +35,19 @@ export class WinkelshopPage {
   protected readonly categoriesErrorMessage = signal<string | null>(null);
   protected readonly productsErrorMessage = signal<string | null>(null);
   protected readonly cartMessage = signal<string | null>(null);
+  protected readonly wishlistMessage = signal<string | null>(null);
   protected readonly currentUser = this.authStateService.user;
   protected readonly cartSummary = signal<CartData | null>(null);
+  protected readonly wishlistSummary = signal<WishlistData | null>(null);
   protected readonly hasCartItems = computed(() => (this.cartSummary()?.items.length ?? 0) > 0);
+  protected readonly wishlistCount = computed(() => this.wishlistSummary()?.itemCount ?? 0);
 
   constructor() {
     this.authStateService.restoreSession();
 
     if (this.authStateService.isAuthenticated()) {
       this.loadCartSummary();
+      this.loadWishlistSummary();
     }
   }
 
@@ -99,6 +106,7 @@ export class WinkelshopPage {
 
   protected logout(): void {
     this.cartSummary.set(null);
+    this.wishlistSummary.set(null);
     this.authStateService.logout().subscribe();
   }
 
@@ -126,6 +134,34 @@ export class WinkelshopPage {
       },
       error: () => {
         this.cartSummary.set(null);
+      }
+    });
+  }
+
+  protected addToWishlist(productId: string): void {
+    if (!this.authStateService.isAuthenticated()) {
+      this.wishlistMessage.set('Bitte melde dich an, um Artikel auf die Wunschliste zu setzen.');
+      return;
+    }
+
+    this.wishlistApiService.addWishlistItem({ productId }).subscribe({
+      next: (response) => {
+        this.wishlistSummary.set(response.data);
+        this.wishlistMessage.set('Artikel wurde auf die Wunschliste gesetzt.');
+      },
+      error: () => {
+        this.wishlistMessage.set('Artikel konnte nicht auf die Wunschliste gesetzt werden.');
+      }
+    });
+  }
+
+  private loadWishlistSummary(): void {
+    this.wishlistApiService.getWishlist().subscribe({
+      next: (response) => {
+        this.wishlistSummary.set(response.data);
+      },
+      error: () => {
+        this.wishlistSummary.set(null);
       }
     });
   }

@@ -13,7 +13,10 @@
           @if (hasCartItems() && cartSummary(); as cart) {
             <p class="account-cart-total">🧺 Warenkorb: {{ cart.totalPrice | priceLabel: cart.currency }}</p>
           }
-          <a class="checkout-link" routerLink="/checkout">🪄 Zum Checkout</a>
+          <div class="account-actions">
+            <a class="wishlist-link" routerLink="/wishlist">⭐ Wunschliste ({{ wishlistCount() }})</a>
+            <a class="checkout-link" routerLink="/checkout">🪄 Zum Checkout</a>
+          </div>
           <button type="button" class="logout-button" (click)="logout()">🚪 Logout</button>
         </div>
       } @else {
@@ -71,12 +74,20 @@
         <ul class="product-grid" aria-label="Produktliste">
           @for (product of products(); track product.id) {
             <li>
-              <app-product-card [product]="product" (addToCart)="addToCart($event)" />
+              <app-product-card
+                [product]="product"
+                (addToCart)="addToCart($event)"
+                (addToWishlist)="addToWishlist($event)"
+              />
             </li>
           }
         </ul>
 
         @if (cartMessage(); as message) {
+          <p class="cart-message" aria-live="polite">{{ message }}</p>
+        }
+
+        @if (wishlistMessage(); as message) {
           <p class="cart-message" aria-live="polite">{{ message }}</p>
         }
       } @else {

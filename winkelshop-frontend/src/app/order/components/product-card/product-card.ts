@@ -13,6 +13,7 @@ import { PriceLabelPipe } from '../../pipes/price-label.pipe';
 export class ProductCard {
   public readonly product = input.required<Product>();
   public readonly addToCart = output<string>();
+  public readonly addToWishlist = output<string>();
 
   protected readonly initial = computed(() => this.product().name.slice(0, 1).toUpperCase());
 }
