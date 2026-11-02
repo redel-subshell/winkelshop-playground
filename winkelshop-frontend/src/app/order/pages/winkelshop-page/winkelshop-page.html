@@ -11,7 +11,7 @@
           <p class="account-name">{{ user.name }}</p>
           <p class="account-email">{{ user.email }}</p>
           @if (hasCartItems() && cartSummary(); as cart) {
-            <p class="account-cart-total">🧺 Warenkorb: {{ formatPrice(cart.totalPrice, cart.currency) }}</p>
+            <p class="account-cart-total">🧺 Warenkorb: {{ cart.totalPrice | priceLabel: cart.currency }}</p>
           }
           <a class="checkout-link" routerLink="/checkout">🪄 Zum Checkout</a>
           <button type="button" class="logout-button" (click)="logout()">🚪 Logout</button>
@@ -47,7 +47,7 @@
         🌌 Alle Kategorien
       </button>
 
-      @for (category of categories(); track trackByCategoryId($index, category)) {
+      @for (category of categories(); track category.id) {
         <button
           type="button"
           class="category-button"
@@ -69,33 +69,9 @@
 
       @if (hasProducts()) {
         <ul class="product-grid" aria-label="Produktliste">
-          @for (product of products(); track trackByProductId($index, product)) {
-            <li class="product-card">
-              <div class="product-image" aria-hidden="true">
-                <span>{{ productInitial(product.name) }}</span>
-              </div>
-              <div class="product-content">
-                <h3>{{ product.name }}</h3>
-                <p class="product-description">{{ product.description }}</p>
-                <div class="product-meta">
-                  <p class="product-price">{{ formatPrice(product.price, product.currency) }}</p>
-                  <p class="product-stock" [class.available]="product.inStock" [class.unavailable]="!product.inStock">
-                    @if (product.inStock) {
-                      Verfuegbar ({{ product.stock }})
-                    } @else {
-                      Nicht verfuegbar
-                    }
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  class="add-to-cart-button"
-                  [disabled]="!product.inStock"
-                  (click)="addToCart(product.id)"
-                >
-                    🧺 In den Warenkorb
-                </button>
-              </div>
+          @for (product of products(); track product.id) {
+            <li>
+              <app-product-card [product]="product" (addToCart)="addToCart($event)" />
             </li>
           }
         </ul>

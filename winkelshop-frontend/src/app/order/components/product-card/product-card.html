@@ -1,0 +1,25 @@
+<div class="product-image" aria-hidden="true">
+  <span>{{ initial() }}</span>
+</div>
+<div class="product-content">
+  <h3>{{ product().name }}</h3>
+  <p class="product-description">{{ product().description }}</p>
+  <div class="product-meta">
+    <p class="product-price">{{ product().price | priceLabel: product().currency }}</p>
+    <p class="product-stock" [class.available]="product().inStock" [class.unavailable]="!product().inStock">
+      @if (product().inStock) {
+        Verfuegbar ({{ product().stock }})
+      } @else {
+        Nicht verfuegbar
+      }
+    </p>
+  </div>
+  <button
+    type="button"
+    class="add-to-cart-button"
+    [disabled]="!product().inStock"
+    (click)="addToCart.emit(product().id)"
+  >
+    🧺 In den Warenkorb
+  </button>
+</div>

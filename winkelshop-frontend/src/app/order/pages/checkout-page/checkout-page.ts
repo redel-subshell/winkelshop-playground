@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -7,6 +15,7 @@ import { catchError, of, switchMap, tap } from 'rxjs';
 import { AuthStateService } from '../../../auth/services/auth-state.service';
 import type { CartItem, CartResponse } from '../../models/cart.models';
 import type { CheckoutResponse } from '../../models/checkout.models';
+import { PriceLabelPipe } from '../../pipes/price-label.pipe';
 import { CartApiService } from '../../services/cart-api.service';
 import { CheckoutApiService } from '../../services/checkout-api.service';
 
@@ -33,7 +42,7 @@ const EMPTY_CART_RESPONSE: CartResponse = {
 
 @Component({
   selector: 'app-checkout-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, PriceLabelPipe],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,10 +53,7 @@ export class CheckoutPage {
   private readonly authStateService = inject(AuthStateService);
   protected readonly currentUser = this.authStateService.user;
 
-  private readonly numberFormatter = new Intl.NumberFormat('de-DE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  private readonly checkoutResultHeading = viewChild<ElementRef<HTMLHeadingElement>>('checkoutResultHeading');
 
   private readonly cartReloadTick = signal(0);
   private readonly quantityDrafts = signal<Record<string, string>>({});
@@ -113,6 +119,15 @@ export class CheckoutPage {
   protected readonly hasCartItems = computed(() => this.cartItems().length > 0);
 
   protected readonly shippingAddressForm = computed(() => this.checkoutForm.controls.shippingAddress);
+
+  protected readonly fieldErrors = computed(() => {
+    const controls = this.checkoutForm.controls.shippingAddress.controls;
+    const fieldNames = Object.keys(controls) as (keyof ShippingAddressFormModel)[];
+
+    return Object.fromEntries(
+      fieldNames.map((fieldName) => [fieldName, this.hasFieldError(controls[fieldName])])
+    ) as Record<keyof ShippingAddressFormModel, boolean>;
+  });
 
   protected updateItemQuantity(item: CartItem): void {
     const draftQuantity = this.quantityDrafts()[item.itemId];
@@ -219,6 +234,7 @@ export class CheckoutPage {
           this.isSubmittingCheckout.set(false);
           this.checkoutResult.set(response.data);
           this.refreshCart();
+          queueMicrotask(() => this.checkoutResultHeading()?.nativeElement.focus());
         },
         error: () => {
           this.isSubmittingCheckout.set(false);
@@ -235,16 +251,8 @@ export class CheckoutPage {
     return item.quantity * item.unitPrice;
   }
 
-  protected formatPrice(price: number, currency: string): string {
-    return `${this.numberFormatter.format(price)} ${this.currencyLabel(currency)}`;
-  }
-
-  protected hasFieldError(field: FormControl<string>): boolean {
+  private hasFieldError(field: FormControl<string>): boolean {
     return field.invalid && (field.dirty || field.touched);
-  }
-
-  protected trackByCartItemId(_index: number, item: CartItem): string {
-    return item.itemId;
   }
 
   private parseQuantity(value: string): number | null {
@@ -258,14 +266,6 @@ export class CheckoutPage {
     }
 
     return parsed;
-  }
-
-  private currencyLabel(currency: string): string {
-    if (currency === 'GALLEON') {
-      return '🪙 GALLEON';
-    }
-
-    return currency;
   }
 
   private refreshCart(): void {

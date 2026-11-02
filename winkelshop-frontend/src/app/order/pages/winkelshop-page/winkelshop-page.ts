@@ -4,8 +4,10 @@ import { RouterLink } from '@angular/router';
 import { catchError, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 
 import { AuthStateService } from '../../../auth/services/auth-state.service';
+import { ProductCard } from '../../components/product-card/product-card';
 import type { CartData } from '../../models/cart.models';
-import type { Category, CategoriesResponse, Product, ProductPageResponse } from '../../models/shop.models';
+import type { CategoriesResponse, ProductPageResponse } from '../../models/shop.models';
+import { PriceLabelPipe } from '../../pipes/price-label.pipe';
 import { CartApiService } from '../../services/cart-api.service';
 import { ShopApiService } from '../../services/shop-api.service';
 
@@ -16,7 +18,7 @@ const EMPTY_CATEGORIES_RESPONSE: CategoriesResponse = {
 
 @Component({
   selector: 'app-winkelshop-page',
-  imports: [RouterLink],
+  imports: [RouterLink, PriceLabelPipe, ProductCard],
   templateUrl: './winkelshop-page.html',
   styleUrl: './winkelshop-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -77,11 +79,6 @@ export class WinkelshopPage {
     return this.categoriesErrorMessage() ?? this.productsErrorMessage();
   });
 
-  private readonly numberFormatter = new Intl.NumberFormat('de-DE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-
   protected readonly selectedCategoryName = computed(() => {
     const selectedCategoryId = this.selectedCategoryId();
     if (!selectedCategoryId) {
@@ -120,30 +117,6 @@ export class WinkelshopPage {
         this.cartMessage.set('Artikel konnte nicht in den Warenkorb gelegt werden.');
       }
     });
-  }
-
-  protected trackByProductId(_index: number, product: Product): string {
-    return product.id;
-  }
-
-  protected trackByCategoryId(_index: number, category: Category): string {
-    return category.id;
-  }
-
-  protected formatPrice(price: number, currency: string): string {
-    return `${this.numberFormatter.format(price)} ${this.currencyLabel(currency)}`;
-  }
-
-  private currencyLabel(currency: string): string {
-    if (currency === 'GALLEON') {
-      return '🪙 GALLEON';
-    }
-
-    return currency;
-  }
-
-  protected productInitial(name: string): string {
-    return name.slice(0, 1).toUpperCase();
   }
 
   private loadCartSummary(): void {

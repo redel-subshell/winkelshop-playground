@@ -34,11 +34,11 @@
 
       @if (hasCartItems()) {
         <ul class="cart-list" aria-label="Warenkorbliste">
-          @for (item of cartItems(); track trackByCartItemId($index, item)) {
+          @for (item of cartItems(); track item.itemId) {
             <li class="cart-item">
               <div class="item-main">
                 <h3>{{ item.name }}</h3>
-                <p class="item-unit-price">Einzelpreis: {{ formatPrice(item.unitPrice, cart().currency) }}</p>
+                <p class="item-unit-price">Einzelpreis: {{ item.unitPrice | priceLabel: cart().currency }}</p>
               </div>
 
               <div class="item-actions">
@@ -77,14 +77,14 @@
                 </button>
               </div>
 
-              <p class="item-subtotal">{{ formatPrice(itemSubtotal(item), cart().currency) }}</p>
+              <p class="item-subtotal">{{ itemSubtotal(item) | priceLabel: cart().currency }}</p>
             </li>
           }
         </ul>
 
         <div class="cart-total">
           <span>💰 Gesamtsumme</span>
-          <strong>{{ formatPrice(cart().totalPrice, cart().currency) }}</strong>
+          <strong>{{ cart().totalPrice | priceLabel: cart().currency }}</strong>
         </div>
       } @else {
         <div class="message-card inline" aria-live="polite">
@@ -119,7 +119,7 @@
               type="text"
               formControlName="fullName"
               autocomplete="name"
-              [attr.aria-invalid]="hasFieldError(shippingAddressForm().controls.fullName)"
+              [attr.aria-invalid]="fieldErrors().fullName"
             />
           </div>
 
@@ -130,7 +130,7 @@
               type="text"
               formControlName="street"
               autocomplete="street-address"
-              [attr.aria-invalid]="hasFieldError(shippingAddressForm().controls.street)"
+              [attr.aria-invalid]="fieldErrors().street"
             />
           </div>
 
@@ -141,7 +141,7 @@
               type="text"
               formControlName="city"
               autocomplete="address-level2"
-              [attr.aria-invalid]="hasFieldError(shippingAddressForm().controls.city)"
+              [attr.aria-invalid]="fieldErrors().city"
             />
           </div>
 
@@ -152,7 +152,7 @@
               type="text"
               formControlName="postalCode"
               autocomplete="postal-code"
-              [attr.aria-invalid]="hasFieldError(shippingAddressForm().controls.postalCode)"
+              [attr.aria-invalid]="fieldErrors().postalCode"
             />
           </div>
 
@@ -163,7 +163,7 @@
               type="text"
               formControlName="country"
               autocomplete="country-name"
-              [attr.aria-invalid]="hasFieldError(shippingAddressForm().controls.country)"
+              [attr.aria-invalid]="fieldErrors().country"
             />
           </div>
         </div>
@@ -185,10 +185,10 @@
 
       @if (checkoutResult(); as result) {
         <div class="message-card success inline" aria-live="polite">
-          <h3>🎉 Bestellung erfolgreich aufgegeben</h3>
+          <h3 #checkoutResultHeading tabindex="-1">🎉 Bestellung erfolgreich aufgegeben</h3>
           <p>Bestellnummer: {{ result.order.id }}</p>
           <p>Status: {{ result.order.status }}</p>
-          <p>Gesamt: {{ formatPrice(result.order.total, result.order.currency) }}</p>
+          <p>Gesamt: {{ result.order.total | priceLabel: result.order.currency }}</p>
           <p>Positionen: {{ result.items.length }}</p>
         </div>
       }
