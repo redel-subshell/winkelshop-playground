@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,7 +37,7 @@ class CartServiceTest {
     private CartService cartService;
 
     @Test
-    void addItem() {
+    void addItem_createsCartItemWithProductPrice() {
         // Arrange
         var userId = UUID.randomUUID();
         var productId = UUID.randomUUID();
@@ -71,7 +71,7 @@ class CartServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenProductIsOutOfStock() {
+    void addItem_throwsExceptionWhenProductIsOutOfStock() {
         // Arrange
         var productId = UUID.randomUUID();
         var outOfStockProduct = new ProductEntity(
@@ -87,8 +87,11 @@ class CartServiceTest {
         );
         when(productRepository.findById(productId)).thenReturn(Optional.of(outOfStockProduct));
 
-        // Act & Assert
-        assertThatThrownBy(() -> cartService.addItem(UUID.randomUUID(), productId, 1))
+        // Act
+        var thrown = catchThrowable(() -> cartService.addItem(UUID.randomUUID(), productId, 1));
+
+        // Assert
+        assertThat(thrown)
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("product is out of stock");
 

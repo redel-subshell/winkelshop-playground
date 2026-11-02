@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,7 @@ class WishlistServiceTest {
     private WishlistService wishlistService;
 
     @Test
-    void addItem() {
+    void addItem_createsWishlistItem() {
         // Arrange
         var userId = UUID.randomUUID();
         var productId = UUID.randomUUID();
@@ -61,7 +61,7 @@ class WishlistServiceTest {
     }
 
     @Test
-    void shouldAllowOutOfStockProductsOnWishlist() {
+    void addItem_acceptsOutOfStockProduct() {
         // Arrange
         var userId = UUID.randomUUID();
         var productId = UUID.randomUUID();
@@ -79,7 +79,7 @@ class WishlistServiceTest {
     }
 
     @Test
-    void shouldNotAddProductTwice() {
+    void addItem_returnsExistingItemWhenProductAlreadyOnWishlist() {
         // Arrange
         var userId = UUID.randomUUID();
         var productId = UUID.randomUUID();
@@ -102,13 +102,16 @@ class WishlistServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenProductDoesNotExist() {
+    void addItem_throwsExceptionWhenProductDoesNotExist() {
         // Arrange
         var productId = UUID.randomUUID();
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThatThrownBy(() -> wishlistService.addItem(UUID.randomUUID(), productId))
+        // Act
+        var thrown = catchThrowable(() -> wishlistService.addItem(UUID.randomUUID(), productId));
+
+        // Assert
+        assertThat(thrown)
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("product not found");
 
@@ -116,7 +119,7 @@ class WishlistServiceTest {
     }
 
     @Test
-    void getWishlist() {
+    void getWishlist_returnsItemsWithProductDetails() {
         // Arrange
         var userId = UUID.randomUUID();
         var productId = UUID.randomUUID();
@@ -144,7 +147,7 @@ class WishlistServiceTest {
     }
 
     @Test
-    void removeItem() {
+    void removeItem_deletesExistingItem() {
         // Arrange
         var userId = UUID.randomUUID();
         var itemId = UUID.randomUUID();
@@ -165,15 +168,17 @@ class WishlistServiceTest {
     }
 
     @Test
-    void shouldNotRemoveForeignItem() {
+    void removeItem_throwsExceptionWhenItemDoesNotBelongToUser() {
         // Arrange
         var userId = UUID.randomUUID();
         var itemId = UUID.randomUUID();
         when(wishlistItemRepository.findByUserIdAndItemId(userId, itemId)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThatThrownBy(() -> wishlistService.removeItem(userId, itemId))
-                .isInstanceOf(RuntimeException.class);
+        // Act
+        var thrown = catchThrowable(() -> wishlistService.removeItem(userId, itemId));
+
+        // Assert
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
 
         verify(wishlistItemRepository, never()).delete(any(WishlistItemEntity.class));
     }
