@@ -1,5 +1,7 @@
 # 🧙‍♂️ Winkelshop KI Playground
 
+Sample User harry@hog.warts/123, ron@hog.warts/123
+
 ## 🏖️ Docker Sandbox Usage
 
 ```bash
